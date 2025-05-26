@@ -21,7 +21,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('Website_image') {
-                    sh 'docker rmi mohamedmahmoud64/Movie_Website:latest || true'
+                    sh 'docker rmi mohamedmahmoud64/movie_website:latest || true'
                     sh 'docker build --no-cache -t $DOCKER_IMAGE:latest .'
                 }
             }
