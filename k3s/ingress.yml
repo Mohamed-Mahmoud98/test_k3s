@@ -6,8 +6,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
   rules:
-    - host: movie.local
-      http:
+    - http:
         paths:
           - path: /
             pathType: Prefix
@@ -16,4 +15,5 @@ spec:
                 name: movie-service
                 port:
                   number: 80
+
 
