@@ -21,7 +21,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('Website_image') {
-                    sh 'docker rmi mohamedmahmoud64/movie_website:latest || true'
+                    sh 'docker rmi $DOCKER_IMAGE:latest || true'
                     sh 'docker build --no-cache -t $DOCKER_IMAGE:latest .'
                 }
             }
@@ -38,8 +38,11 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f Website_image/deployment.yaml'
-                sh 'kubectl apply -f Website_image/service.yaml'
+                // تنفيذ جميع ملفات yaml داخل مجلد k3s
+                sh 'kubectl apply -f k3s/deployment.yml'
+                sh 'kubectl apply -f k3s/service.yml'
+                sh 'kubectl apply -f k3s/ingress.yml'
+                sh 'kubectl apply -f k3s/albservice.yml'
             }
         }
     }
