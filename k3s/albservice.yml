@@ -9,6 +9,6 @@ spec:
     app.kubernetes.io/name: traefik
   ports:
     - name: web
-      port: 80
-      targetPort: 8000 
-      nodePort: 30080
+      port: 80           # الخدمة تعرض بورت 80 داخل الكلاستر
+      targetPort: 8000   # ودي البورت اللي Traefik مسموع عليه في البود
+      nodePort: 30080    # بورت الدخول من خارج الكلاستر
