@@ -35,5 +35,12 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl apply -f Website_image/deployment.yaml'
+                sh 'kubectl apply -f Website_image/service.yaml'
+            }
+        }
     }
 }
