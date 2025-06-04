@@ -2,10 +2,8 @@ pipeline {
     agent any
 
     environment {
-        TF_DIR = 'terraform'
-        ANSIBLE_DIR = 'ansible'
-        HOSTS_FILE = "${WORKSPACE}/hosts.ini"
-        LOCAL_SSH_KEY = "${WORKSPACE}/ec2_key.pem"  // Absolute path
+        HOSTS_FILE = "${WORKSPACE}/inventory.ini"
+        LOCAL_SSH_KEY = "${WORKSPACE}/labsuser.pem" 
     }
 
     stages {
@@ -15,23 +13,23 @@ pipeline {
             }
         }
 
-
-
-        stage('Generate Ansible Files') {
+        stage('Prepare SSH Key') {
             steps {
                 withCredentials([file(credentialsId: 'EC2_SSH_KEY', variable: 'SSH_KEY')]) {
-                    script {
-                        // Prepare SSH key with absolute path
-                        sh """
-                            cp \$SSH_KEY ${LOCAL_SSH_KEY}
-                            chmod 600 ${LOCAL_SSH_KEY}
-                        """
-                    }
+                    sh """
+                        cp \$SSH_KEY ${LOCAL_SSH_KEY}
+                        chmod 600 ${LOCAL_SSH_KEY}
+                    """
                 }
             }
         }
 
-
-
+        stage('Run Ansible Playbook') {
+            steps {
+                sh """
+                    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${HOSTS_FILE} playbook.yml
+                """
+            }
+        }
     }
 }
