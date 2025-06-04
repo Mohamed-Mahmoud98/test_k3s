@@ -38,12 +38,23 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                // تنفيذ جميع ملفات yaml داخل مجلد k3s
-                sh 'kubectl apply -f k3s/deployment.yml'
-                sh 'kubectl apply -f k3s/service.yml'
-                sh 'kubectl apply -f k3s/ingress.yml'
-                sh 'kubectl apply -f k3s/albservice.yml'
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
+                    sh '''
+                        # نسخ ملف kubeconfig إلى workspace
+                        cp $KUBECONFIG_FILE $WORKSPACE/kubeconfig
+        
+                        # تصدير متغير البيئة مع المسار الجديد
+                        export KUBECONFIG=$WORKSPACE/kubeconfig
+        
+                        # تنفيذ أوامر kubectl
+                        kubectl apply -f k3s/deployment.yml
+                        kubectl apply -f k3s/service.yml
+                        kubectl apply -f k3s/ingress.yml
+                        kubectl apply -f k3s/albservice.yml
+                    '''
+                }
             }
         }
+
     }
 }
